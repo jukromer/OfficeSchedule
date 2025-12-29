@@ -31,6 +31,35 @@ Environment values are loaded from `.env` / `.flaskenv`. At minimum define:
 - LDAP credentials: `LDAP_SERVER`, `LDAP_BASE_DN`, `LDAP_USER_DN_TEMPLATE`, `LDAP_BIND_DN`, `LDAP_BIND_PASSWORD`
 - Admin bootstrap values: `ADMIN_USERNAME`, `ADMIN_PASSWORD`
 
+### Environment configuration
+
+Create two files inside `backend/` before running the server:
+
+```bash
+# backend/.env
+SECRET_KEY=change-me
+JWT_SECRET_KEY=jwt-change-me
+SQLALCHEMY_DATABASE_URI=sqlite:///app.db
+
+LDAP_SERVER=ldap://your-server
+LDAP_BASE_DN=dc=example,dc=local
+LDAP_USER_DN_TEMPLATE={username}@example.local
+LDAP_BIND_DN=user@example.local
+LDAP_BIND_PASSWORD=super-secret
+
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+```
+
+```bash
+# backend/.flaskenv
+FLASK_APP=app:create_app
+FLASK_ENV=development
+# optionally FLASK_RUN_PORT=5000, FLASK_DEBUG=1, etc.
+```
+
+Adjust the values to match your environment. Because these files contain secrets they are already listed in `.gitignore`.
+
 ## Frontend setup
 
 ```bash
