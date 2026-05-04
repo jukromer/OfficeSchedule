@@ -3,6 +3,7 @@ client/node_modules
 /.pnp
 .pnp.js
 /.venv
+/client/yarn.lock
 
 
 # testing

@@ -27,8 +27,12 @@ python run.py     # starts the Flask dev server on http://localhost:5000
 Environment values are loaded from `.env` / `.flaskenv`. At minimum define:
 
 - `SECRET_KEY`, `JWT_SECRET_KEY`
-- `DATABASE_URL` (defaults to SQLite `app.db`)
-- LDAP credentials: `LDAP_SERVER`, `LDAP_BASE_DN`, `LDAP_USER_DN_TEMPLATE`, `LDAP_BIND_DN`, `LDAP_BIND_PASSWORD`
+- `SQLALCHEMY_DATABASE_URI` (defaults to SQLite `app.db`)
+- LDAP server: `LDAP_SERVER`, `LDAP_BASE_DN`
+- LDAP authentication mode (choose one):
+  - Direct bind: `LDAP_USER_DN_TEMPLATE` (e.g. `{username}@example.local` or `uid={username},cn=users,dc=…`)
+  - Search bind: `LDAP_BIND_DN`, `LDAP_BIND_PASSWORD` (leave `LDAP_USER_DN_TEMPLATE` empty), plus optional `LDAP_USER_SUBTREE` and `LDAP_USER_FILTER` (default `(objectClass=person)`)
+- Optional group authorization (search-bind only): `LDAP_AUTHORIZED_GROUP_DN`, `LDAP_AUTHORIZED_GROUP_MEMBER_ATTR` (default `memberUid`)
 - Admin bootstrap values: `ADMIN_USERNAME`, `ADMIN_PASSWORD`
 
 ### Environment configuration
@@ -41,11 +45,16 @@ SECRET_KEY=change-me
 JWT_SECRET_KEY=jwt-change-me
 SQLALCHEMY_DATABASE_URI=sqlite:///app.db
 
-LDAP_SERVER=ldap://your-server
+LDAP_SERVER=ldap://your-server:389
 LDAP_BASE_DN=dc=example,dc=local
-LDAP_USER_DN_TEMPLATE={username}@example.local
-LDAP_BIND_DN=user@example.local
+# Leave empty for search-bind via service account:
+LDAP_USER_DN_TEMPLATE=
+LDAP_BIND_DN=uid=service,cn=service_accounts,dc=example,dc=local
 LDAP_BIND_PASSWORD=super-secret
+LDAP_USER_SUBTREE=cn=users
+LDAP_USER_FILTER=(objectClass=person)
+LDAP_AUTHORIZED_GROUP_DN=cn=app-users,cn=groups,dc=example,dc=local
+LDAP_AUTHORIZED_GROUP_MEMBER_ATTR=memberUid
 
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin
