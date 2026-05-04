@@ -7,6 +7,7 @@ export const translateApiMessage = (message) => {
     'Invalid credentials': 'Ungültige Zugangsdaten',
     'Username and password are required': 'Benutzername und Passwort werden benötigt',
     'Booking conflict': 'Der Zeitraum ist bereits reserviert',
+    'Booking deleted': 'Buchung gelöscht',
     Forbidden: 'Nicht erlaubt'
   };
 

@@ -33,3 +33,9 @@ export const createBooking = (token, booking) =>
     },
     body: JSON.stringify(booking)
   }).then(parseResponse);
+
+export const deleteBooking = (token, id) =>
+  fetch(`${API_BASE}/bookings/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  }).then(parseResponse);

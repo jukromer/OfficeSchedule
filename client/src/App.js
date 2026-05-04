@@ -8,9 +8,10 @@ import HeaderBar from './components/HeaderBar';
 import AuthCard from './components/AuthCard';
 import CalendarCard from './components/CalendarCard';
 import BookingDialog from './components/BookingDialog';
+import EventDetailsDialog from './components/EventDetailsDialog';
 import { translateApiMessage } from './utils/messages';
 import { formatForApi, getDefaultBookingWindow } from './utils/datetime';
-import { loginUser, fetchBookings, createBooking } from './services/api';
+import { loginUser, fetchBookings, createBooking, deleteBooking } from './services/api';
 import './App.css';
 
 dayjs.locale('de');
@@ -28,6 +29,7 @@ function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draftBooking, setDraftBooking] = useState(emptyBooking);
   const [successMessage, setSuccessMessage] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const authenticated = Boolean(token);
 
@@ -121,6 +123,28 @@ function App() {
     setDraftBooking(emptyBooking);
   };
 
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
+    setBookingError('');
+  };
+
+  const closeEventDialog = () => setSelectedEvent(null);
+
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent) {
+      return;
+    }
+    try {
+      await deleteBooking(token, selectedEvent.id);
+      closeEventDialog();
+      setSuccessMessage('Buchung gelöscht');
+      await loadBookings();
+    } catch (error) {
+      setBookingError(translateApiMessage(error.payload?.msg) || error.message);
+      closeEventDialog();
+    }
+  };
+
   const handleBookingSubmit = async () => {
     if (!draftBooking.title || !draftBooking.start || !draftBooking.end) {
       setBookingError('Bitte füllen Sie alle Felder aus.');
@@ -197,6 +221,7 @@ function App() {
               error={bookingError}
               onManualBooking={handleManualBooking}
               onSelectSlot={handleDateSelect}
+              onSelectEvent={handleSelectEvent}
             />
           )}
         </Box>
@@ -207,6 +232,14 @@ function App() {
           onClose={closeDialog}
           onSubmit={handleBookingSubmit}
           onChange={handleDraftChange}
+        />
+
+        <EventDetailsDialog
+          open={Boolean(selectedEvent)}
+          event={selectedEvent}
+          currentUser={username}
+          onClose={closeEventDialog}
+          onDelete={handleDeleteEvent}
         />
 
         <Snackbar

@@ -4,7 +4,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import deLocale from '@fullcalendar/core/locales/de';
 import { Paper, Box, Typography, Button, Alert } from '@mui/material';
 
-const CalendarCard = ({ bookings, error, onManualBooking, onSelectSlot }) => {
+const CalendarCard = ({ bookings, error, onManualBooking, onSelectSlot, onSelectEvent }) => {
   const events = bookings.map((booking) => ({
     id: String(booking.id),
     title: booking.title,
@@ -62,12 +62,15 @@ const CalendarCard = ({ bookings, error, onManualBooking, onSelectSlot }) => {
           selectable
           selectMirror
           select={onSelectSlot}
-          eventClick={(info) => {
-            const creator = info.event.extendedProps?.created_by
-              ? `\nErstellt von: ${info.event.extendedProps.created_by}`
-              : '';
-            alert(`${info.event.title}${creator}`);
-          }}
+          eventClick={(info) =>
+            onSelectEvent({
+              id: info.event.id,
+              title: info.event.title,
+              start: info.event.start,
+              end: info.event.end,
+              createdBy: info.event.extendedProps?.created_by
+            })
+          }
           eventTimeFormat={{
             hour: '2-digit',
             minute: '2-digit',
